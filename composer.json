@@ -1,0 +1,13 @@
+{
+  "name" : "iOrder",
+  "require" : {
+    "laravel/laravel" : "=v4.2.11",
+    "barryvdh/laravel-ide-helper" : "=v1.11.6",
+    "components/jquery" : ">2.0.1",
+    "barryvdh/laravel-dompdf" : "v0.4.6"
+  },
+  "repositories" : [ {
+    "type" : "composer",
+    "url" : "https://packagist.org/"
+  } ]
+}
