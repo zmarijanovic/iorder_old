@@ -10,7 +10,26 @@ class OrdersController extends \BaseController
      */
     public function index()
     {
-        return View::make('orders.index');
+        $orders=Order::all()->sortByDesc('id')->take(1);
+        $rows = [];
+        foreach ($orders as $row) {
+            // $details = OrderDetail::where('orders_fk','=',$row->id)->get();
+            // $rows[] = array(
+            //   'id' => $row->id,
+            //   'order_date' => date("d/m/Y", strtotime($row->order_date)),
+            //   'order_num' => $row->order_num,
+            //   'ordertype_id' => $row->order_type_fk,
+            //   'vehicle_id' => $row->vehicle_fk,
+            //
+            //   'details' => $details
+            // );
+
+            array_add($row,'details',$row->details);
+
+
+          }
+            return json_encode($orders);
+        //return View::make('orders.org.index',$orders);
     }
 
     public function orderList()
@@ -22,16 +41,16 @@ class OrdersController extends \BaseController
             $buyerFK = (Input::has('buyerFK')) ? Input::get('buyerFK') : '0';
             $sDate = (Input::has('sDate')) ? Input::get('sDate') : date('Y-m-d', mktime(0, 0, 0, date('m'), 1, date('Y')));
             $eDate = (Input::has('eDate')) ? Input::get('eDate') : date('Y-m-d');
-            
+
             if ((Input::has('sort')) && (! is_null(Input::get('sort')))) {
                 $sortColumn = key(Input::get('sort'));
                 $sortType = Input::get('sort')[$sortColumn];
             } else {
-                
+
                 $sortColumn = 'id';
                 $sortType = 'desc';
             }
-            
+
             $whereStatement = '';
             if ($transporterFK != '0') {
                 $whereStatement = "transporter_fk = '$transporterFK' AND ";
@@ -39,17 +58,17 @@ class OrdersController extends \BaseController
             if ($buyerFK != '0') {
                 $whereStatement .= "buyers_fk = '$buyerFK' AND ";
             }
-            
+
             $whereStatement .= "(order_date BETWEEN '$sDate' AND '$eDate')";
-            
+
             $orders = OrderView::whereRaw($whereStatement)->take($take)
                 ->skip($skip)
                 ->orderBy($sortColumn, $sortType)
                 ->get();
-            
+
             $rows = [];
             foreach ($orders as $row) {
-                
+
                 $rows[] = array(
                     'id' => $row->id,
                     'order_date' => date("d/m/Y", strtotime($row->order_date)),
@@ -62,7 +81,7 @@ class OrdersController extends \BaseController
 //                     'timeframe' => date("d/m/Y", strtotime($row->tripstart($row->id)->odate)) . " - " . date("d/m/Y", strtotime($row->tripend($row->id)->odate))
                 );
             }
-            
+
             $transporter_name = Transporter::find($transporterFK);
             $data = array(
                 'transporter_cname' => (isset($transporter_name) ? $transporter_name->cname : ''),
@@ -71,7 +90,7 @@ class OrdersController extends \BaseController
                 'rows' => $rows,
                 'total' => OrderView::whereRaw($whereStatement)->count()
             );
-            
+
             return $data;
         } else {
             $transporters = Transporter::orderBy('cname')->lists('cname', 'id');
@@ -110,7 +129,7 @@ class OrdersController extends \BaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id            
+     * @param int $id
      * @return Response
      */
     public function show($id)
@@ -130,7 +149,7 @@ class OrdersController extends \BaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id            
+     * @param int $id
      * @return Response
      */
     public function edit($id)
@@ -157,20 +176,20 @@ class OrdersController extends \BaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param int $id            
+     * @param int $id
      * @return Response
      */
     public function update($id)
     {
            if(! Order::isValid(Input::all()))
         {
-            
+
             //return Redirect::back()->withInput()->withErrors(Company::$messages);
             return Response::json (array('errorMsg'=>Order::$messages));
-            
+
         }
-        
-        
+
+
         $company=Company::find($id);
         $company->companies_type_fk=Input::get('companies_type_fk');
         $company->cname=Input::get('cname');
@@ -186,20 +205,20 @@ class OrdersController extends \BaseController
         $company->web=Input::get('web');
         $company->notes=Input::get('notes');
         $company->save();
-        
+
         // redirect
-//         Session::flash('message', 'Successfully updated company!');    
+//         Session::flash('message', 'Successfully updated company!');
 
         //if (Request::ajax()) {
-             
+
             $response = array(
             'success' => 'success',
             'status' => Lang::get('gui.crud_success'),
             'msg' => Lang::get('gui.crud_uOK')
         );
- 
+
         return Response::json( $response );
-//         } else {   
+//         } else {
 //         return Redirect::to('companies');
 //         }
 
@@ -208,7 +227,7 @@ class OrdersController extends \BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id            
+     * @param int $id
      * @return Response
      */
     public function destroy($id)
