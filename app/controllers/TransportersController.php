@@ -11,33 +11,33 @@ class TransportersController extends \BaseController {
 	{
 	    return View::make('transporters.index');
 	}
-	
+
 	public function indexAll()
 	{
-	
-	
+
+
 	    if(Request::ajax()){
 	        $take = (Input::has('rowCount')) ? Input::get('rowCount') : '';
 	        $skip = (Input::has('current')) ? ((Input::get('current')*$take)-$take) : '';
 	        $searchPhrase = (Input::has('searchPhrase')) ? Input::get('searchPhrase') : '';
-	
+
 	        if((Input::has('sort')) && (!is_null(Input::get('sort')))) {
 	            $sortColumn = key(Input::get('sort'));
 	            $sortType = Input::get('sort')[$sortColumn];
-	             
+
 	        } else {
-	
+
 	            $sortColumn = 'cname';
 	            $sortType = 'asc';
-	
+
 	        }
-	
-	
+
+
 	        $buyers=Transporter::where('cname','like', '%'.$searchPhrase.'%')->take($take)->skip($skip)->orderBy($sortColumn, $sortType)->get();
-	
+
 	        $rows = [];
 	        foreach($buyers as $row) {
-	
+
 	            $rows[] = array(
 	                'id' => $row->id,
 	                'cname' => $row->cname,
@@ -45,26 +45,26 @@ class TransportersController extends \BaseController {
 	                'country' => $row->country,
 	            );
 	        }
-	         
+
 	        $data = array(
 	            'current' => (int)Input::get('current'),
 	            'rowCount' => (int)$take,
 	            'rows' => $rows,
 	            'total' => Transporter::where('cname','like', '%'.$searchPhrase.'%')->count(),
 	        );
-	         
+
 	        return $data;
 	    } else return View::make('transporters.index');
-	
+
 	}
-	
-	
-	
-	
+
+
+
+
 	public function listAjax()
 	{
 	    $transporters=Transporter::orderBy('cname')->get();
-	    array_add($transporters[0], 'selected', 'true');
+	    // array_add($transporters[0], 'selected', 'true');
 	    return $transporters;
 	}
 
@@ -89,11 +89,11 @@ class TransportersController extends \BaseController {
 	{
 		if(! Transporter::isValid(Input::all()))
         {
-    
+
             return Response::json (array('errorMsg'=>Transporter::$messages));
-    
+
         }
-        
+
         $transporter= new Transporter;
         $transporter->cname=Input::get('cname');
         $transporter->pname=Input::get('pname');
@@ -108,13 +108,13 @@ class TransportersController extends \BaseController {
         $transporter->web=Input::get('web');
         $transporter->notes=Input::get('notes');
         $transporter->save();
-    
+
         $response = array(
             'success' => 'success',
             'status' => Lang::get('gui.crud_success'),
             'msg' => Lang::get('gui.crud_cOK')
         );
-        
+
         return Response::json( $response );
 	}
 
@@ -155,11 +155,11 @@ class TransportersController extends \BaseController {
 	{
 		if(! Transporter::isValid(Input::all()))
         {
-            
+
             return Response::json (array('errorMsg'=>Transporter::$messages));
-            
+
         }
-        
+
         $transporter=Transporter::find($id);
         $transporter->cname=Input::get('cname');
         $transporter->pname=Input::get('pname');
@@ -174,15 +174,15 @@ class TransportersController extends \BaseController {
         $transporter->web=Input::get('web');
         $transporter->notes=Input::get('notes');
         $transporter->save();
-        
+
         $response = array(
             'success' => 'success',
             'status' => Lang::get('gui.crud_success'),
             'msg' => Lang::get('gui.crud_uOK')
         );
-        
+
         return Response::json( $response );
-	    
+
 	}
 
 
@@ -196,13 +196,13 @@ class TransportersController extends \BaseController {
 	{
 		$transporter=Transporter::find($id);
         $transporter->delete();
-        
+
         $response = array(
             'success' => 'success',
             'status' => Lang::get('gui.crud_success'),
             'msg' => Lang::get('gui.crud_dOK')
         );
-        
+
         return Response::json( $response );
 	}
 
