@@ -48,7 +48,7 @@ Route::resource('vehicletype','VehicleTypesController');
 // Route::post('cancelledorders','OrdersController@indexCancelled');
 
 
-
+Route::get('orders/ajax','OrdersController@listAjax'); //prepare data for mongoDB
 Route::get('orders/pdf/{id}','OrdersController@pdf');
 Route::post('orders/list','OrdersController@orderList');
 Route::get('orders/list','OrdersController@orderList');

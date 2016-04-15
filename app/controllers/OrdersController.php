@@ -8,6 +8,20 @@ class OrdersController extends \BaseController
      *
      * @return Response
      */
+
+     public function listAjax()
+   	{
+
+        $orders=Order::where('order_date','>','2013-12-31')->orderBy('id')->skip(10000)->take(5000)->get();
+    //  $orders=Order::where('order_date','>','2013-12-31')->orderBy('id')->take(10)->get();
+
+
+       //  $orders=Order::orderBy('id')->take(1000)->get();
+   	    // array_add($transporters[0], 'selected', 'true');
+   	   //  return json_encode($orders, JSON_PRETTY_PRINT);
+        return $orders;
+   	}
+
     public function index()
     {
         $orders=Order::all()->sortByDesc('id')->take(1);
